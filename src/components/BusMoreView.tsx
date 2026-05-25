@@ -44,9 +44,14 @@ export default function BusMoreView({
   const getProcessedBuses = (): BusArrival[] => {
     let list = [...INITIAL_BUS_ARRIVALS];
 
-    if (filter === "highway_only") {
+    if (filter === "all") {
+      // "기본 정렬은 시내버스만"
+      list = list.filter(b => b.type === "city");
+    } else if (filter === "highway_only") {
+      // "기본 + 시외(고속)는 이 두가지가 동시에"
       list = list.filter(b => b.type === "city" || b.type === "highway");
     } else if (filter === "shuttle_only") {
+      // "기본 + 셔틀은 이 두가지가 동시에"
       list = list.filter(b => b.type === "city" || b.type === "shuttle");
     }
 
@@ -143,30 +148,30 @@ export default function BusMoreView({
               className={`py-2 px-1 rounded-xl text-[10px] font-black tracking-tight border transition-all cursor-pointer ${
                 filter === "all"
                   ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-slate-50 text-gray-500 border-slate-200 hover:bg-slate-100"
+                  : "bg-white text-gray-500 border-slate-200 hover:bg-slate-100"
               }`}
             >
-              기본 정렬
+              기본 (시내버스)
             </button>
             <button
               onClick={() => setFilter("highway_only")}
               className={`py-2 px-1 rounded-xl text-[10px] font-black tracking-tight border transition-all cursor-pointer ${
                 filter === "highway_only"
                   ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-slate-50 text-gray-500 border-slate-200 hover:bg-slate-100"
+                  : "bg-white text-gray-500 border-slate-200 hover:bg-slate-100"
               }`}
             >
-              고속 포함 정렬
+              시내 + 시외/고속
             </button>
             <button
               onClick={() => setFilter("shuttle_only")}
               className={`py-2 px-1 rounded-xl text-[10px] font-black tracking-tight border transition-all cursor-pointer ${
                 filter === "shuttle_only"
                   ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-slate-50 text-gray-500 border-slate-200 hover:bg-slate-100"
+                  : "bg-white text-gray-500 border-slate-200 hover:bg-slate-100"
               }`}
             >
-              셔틀 포함 정렬
+              시내 + 대학셔틀
             </button>
           </div>
         </div>
@@ -227,10 +232,14 @@ export default function BusMoreView({
                   {/* Pin button */}
                   <button
                     onClick={(e) => togglePin(bus.routeNumber, e)}
-                    className="text-gray-300 hover:text-orange-500 transition-colors p-0.5"
+                    className={`p-1 rounded-full transition-all cursor-pointer ${
+                      isPinned 
+                        ? "text-amber-600 bg-amber-50 hover:bg-amber-100" 
+                        : "text-gray-300 hover:text-amber-500 hover:bg-gray-100"
+                    }`}
                     title="상단 고정"
                   >
-                    <Pin className={`w-3.5 h-3.5 ${isPinned ? "fill-orange-500 text-orange-500 rotate-45" : ""}`} />
+                    <Pin className={`w-3.5 h-3.5 ${isPinned ? "fill-amber-500 text-amber-500 rotate-45" : ""}`} />
                   </button>
 
                   <div className={`w-11 h-6.5 rounded-full flex items-center justify-center font-black text-white text-[11px] ml-0.5 shadow-xs ${colorClass}`}>

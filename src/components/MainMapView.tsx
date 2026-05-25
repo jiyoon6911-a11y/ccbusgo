@@ -23,6 +23,7 @@ export default function MainMapView({
   setPinned
 }: MainMapViewProps) {
   const [isSheetExpanded, setIsSheetExpanded] = useState(true);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(["city"]);
 
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -35,6 +36,14 @@ export default function MainMapView({
     e.stopPropagation();
     setPinned(prev =>
       prev.includes(id) ? prev.filter(item => item !== id) : [id, ...prev]
+    );
+  };
+
+  const toggleTypeFilter = (type: string) => {
+    setSelectedTypes(prev =>
+      prev.includes(type)
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
     );
   };
 
@@ -98,9 +107,11 @@ export default function MainMapView({
     );
   };
 
-  // General listing showing only favorited buses
+  // General listing showing only favorited buses of selected types
   const getBuses = (): BusArrival[] => {
-    const list = INITIAL_BUS_ARRIVALS.filter(b => favorites.includes(b.routeNumber));
+    const list = INITIAL_BUS_ARRIVALS.filter(
+      b => favorites.includes(b.routeNumber) && selectedTypes.includes(b.type)
+    );
     return list.sort((a, b) => {
       const aPinned = pinned.includes(a.routeNumber);
       const bPinned = pinned.includes(b.routeNumber);
@@ -196,10 +207,14 @@ export default function MainMapView({
                     {/* Pin button */}
                     <button
                       onClick={(e) => togglePin(bus.routeNumber, e)}
-                      className="text-gray-300 hover:text-orange-500 transition-colors p-0.5"
+                      className={`p-1 rounded-full transition-all cursor-pointer ${
+                        isPinnedInTop 
+                          ? "text-amber-600 bg-amber-50 hover:bg-amber-100" 
+                          : "text-gray-300 hover:text-amber-500 hover:bg-gray-100"
+                      }`}
                       title="상단 고정 해제"
                     >
-                      <Pin className={`w-3.5 h-3.5 ${isPinnedInTop ? "fill-orange-500 text-orange-500 rotate-45" : ""}`} />
+                      <Pin className={`w-3.5 h-3.5 ${isPinnedInTop ? "fill-amber-500 text-amber-500 rotate-45" : ""}`} />
                     </button>
 
                     <div className="flex items-center gap-1 ml-0.5">
@@ -238,6 +253,46 @@ export default function MainMapView({
           {isSheetExpanded && (
             <div className="animate-fade-in-up mt-2">
               
+              {/* Bus Type Multi-Select Filters */}
+              <div className="flex items-center justify-between bg-slate-50/70 border border-slate-100 rounded-2xl p-2.5 mb-3 select-none">
+                <span className="text-[10px] font-black text-slate-500 shrink-0">운행 구분 필터</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => toggleTypeFilter("city")}
+                    className={`px-3 py-1 flex items-center gap-1.5 rounded-full text-[10.5px] font-extrabold transition-all border shadow-xs cursor-pointer ${
+                      selectedTypes.includes("city")
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                        : "bg-white text-slate-400 border-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${selectedTypes.includes("city") ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
+                    시내버스
+                  </button>
+                  <button
+                    onClick={() => toggleTypeFilter("shuttle")}
+                    className={`px-3 py-1 flex items-center gap-1.5 rounded-full text-[10.5px] font-extrabold transition-all border shadow-xs cursor-pointer ${
+                      selectedTypes.includes("shuttle")
+                        ? "bg-amber-50 text-amber-700 border-amber-300"
+                        : "bg-white text-slate-400 border-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${selectedTypes.includes("shuttle") ? "bg-amber-500 animate-pulse" : "bg-slate-300"}`} />
+                    셔틀버스
+                  </button>
+                  <button
+                    onClick={() => toggleTypeFilter("highway")}
+                    className={`px-3 py-1 flex items-center gap-1.5 rounded-full text-[10.5px] font-extrabold transition-all border shadow-xs cursor-pointer ${
+                      selectedTypes.includes("highway")
+                        ? "bg-purple-50 text-purple-700 border-purple-300"
+                        : "bg-white text-slate-400 border-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${selectedTypes.includes("highway") ? "bg-purple-500 animate-pulse" : "bg-slate-300"}`} />
+                    고속버스
+                  </button>
+                </div>
+              </div>
+              
               {/* Table labels & filters */}
               <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 border-b pb-1.5 mb-2">
                 <div className="flex items-center gap-2">
@@ -273,10 +328,14 @@ export default function MainMapView({
                         {/* Pin Button (pin to top cards) */}
                         <button
                           onClick={(e) => togglePin(bus.routeNumber, e)}
-                          className="text-gray-300 hover:text-orange-500 transition-colors p-0.5"
+                          className={`p-1 rounded-full transition-all cursor-pointer ${
+                            isPinned 
+                              ? "text-amber-600 bg-amber-50 hover:bg-amber-100" 
+                              : "text-gray-300 hover:text-amber-500 hover:bg-gray-100"
+                          }`}
                           title="상단 고정 (자주타는 버스)"
                         >
-                          <Pin className={`w-3.5 h-3.5 ${isPinned ? "fill-orange-500 text-orange-500 rotate-45" : ""}`} />
+                          <Pin className={`w-3.5 h-3.5 ${isPinned ? "fill-amber-500 text-amber-500 rotate-45" : ""}`} />
                         </button>
                         
                         {/* Bus Badge circle */}
