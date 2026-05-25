@@ -1,0 +1,6 @@
+{
+  "name": "춘천 버스Go",
+  "description": "내 손안의 춘천 버스 매니저, 춘천 버스Go 앱으로 실시간 버스 도착 정보, 분실물 찾기, 공지사항, AI 민원 챗봇 및 검색 도우미 서비스를 이용해보세요.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
