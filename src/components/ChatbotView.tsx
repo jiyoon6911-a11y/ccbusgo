@@ -11,7 +11,7 @@ export default function ChatbotView({ onClose }: ChatbotViewProps) {
     {
       id: "wel",
       sender: "bot",
-      text: "안녕하세요! 내 손안의 춘천 버스 매니저, '춘천 버스Go' AI 상담사입니다. 🚌✨\n\n춘천 시내버스 노선, 한림대 셔틀버스 정보, 분실물 신고 접수, 혹은 승차 중 불편하신 사항(민원)을 아래 양식에 적어 제출해주시면 신속히 답변해 드리겠습니다!",
+      text: "안녕하세요! 내 손안의 춘천 버스 매니저, '춘천 버스GO' AI 상담사입니다. 🚌✨\n\n춘천 시내버스 노선, 한림대 셔틀버스 정보, 분실물 신고 접수, 혹은 승차 중 불편하신 사항(민원)을 아래 양식에 적어 제출해주시면 신속히 답변해 드리겠습니다!",
       timestamp: "11:05"
     }
   ]);
@@ -78,7 +78,7 @@ export default function ChatbotView({ onClose }: ChatbotViewProps) {
       const errorMsg: ChatMessage = {
         id: `err_${Date.now()}`,
         sender: "bot",
-        text: "현재 실시간 춘천 버스Go AI 상담 지국에 연결할 수 없습니다. 잠시 후 재시도 부탁드립니다.",
+        text: "현재 실시간 춘천 버스GO AI 상담 지국에 연결할 수 없습니다. 잠시 후 재시도 부탁드립니다.",
         timestamp: "오류"
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -114,7 +114,7 @@ export default function ChatbotView({ onClose }: ChatbotViewProps) {
           <p className="text-gray-600 font-semibold text-[11px] leading-relaxed">
             FAQ 기능을 통해 AI와 대화하며 궁금한 점을 해결하실 수 있습니다.
             <br />
-            춘천 버스Go의 민원 처리 결과는 하루 혹은 이틀 뒤에 확인 가능합니다.
+            춘천 버스GO의 민원 처리 결과는 하루 혹은 이틀 뒤에 확인 가능합니다.
           </p>
           <div className="border-t border-dashed border-gray-100 pt-2 mt-2 flex items-center justify-between text-[11px] font-bold text-gray-400">
             <span className="flex items-center gap-1">

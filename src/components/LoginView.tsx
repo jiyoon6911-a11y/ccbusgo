@@ -79,7 +79,7 @@ export default function LoginView({ onLogin }: LoginViewProps) {
           춘천 버스 매니저,
         </p>
         <h1 className="text-4xl font-extrabold tracking-tight mt-4 font-sans drop-shadow-sm flex items-center justify-center gap-1.5">
-          <span>춘천 버스Go</span>
+          <span>춘천 버스GO</span>
           <Sparkles className="w-6 h-6 text-yellow-200 fill-yellow-200" />
         </h1>
       </div>
@@ -257,7 +257,7 @@ export default function LoginView({ onLogin }: LoginViewProps) {
             </h3>
 
             <p className="text-xs text-gray-500 leading-relaxed mt-4">
-              춘천 버스Go는 개인정보 보호를 위해 통합 간편 로그인 인터페이스를 제공하고 있습니다.
+              춘천 버스GO는 개인정보 보호를 위해 통합 간편 로그인 인터페이스를 제공하고 있습니다.
               <br />
               <strong className="text-blue-600">간편 로그인</strong> 버튼을 누르시면 준비된 프리셋 계정(<strong className="text-red-500">김한림</strong>님)으로 아무 가입 없이 즉각 앱의 모든 기능을 스마트하게 경험하실 수 있습니다!
             </p>

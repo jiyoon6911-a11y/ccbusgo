@@ -104,7 +104,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-0 md:p-6" id="app-root">
+    <div className="min-h-screen bg-[#CCDCFF] flex items-center justify-center p-0 md:p-6" id="app-root">
       
       {/* 
         Responsive Mobile Mockup Shell Framing:

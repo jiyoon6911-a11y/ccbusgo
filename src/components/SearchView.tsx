@@ -225,7 +225,7 @@ export default function SearchView({ onClose, onSelectBus, onSelectStation }: Se
             </>
           )}
         </div>
-        <span className="text-[10px] text-gray-400 font-medium">춘천 버스Go 검색엔진</span>
+        <span className="text-[10px] text-gray-400 font-medium">춘천 버스GO 검색엔진</span>
       </div>
 
       {/* 4. Results Section */}

@@ -29,7 +29,7 @@ export default function MyPageView({ username, station, onLogout, onAnnouncement
             </div>
 
             <div className="flex flex-col">
-              <span className="text-xs text-blue-100 font-bold tracking-tight">춘천 버스Go 우등회원</span>
+              <span className="text-xs text-blue-100 font-bold tracking-tight">춘천 버스GO 우등회원</span>
               <h2 className="text-xl font-black text-white tracking-tight mt-0.5">{username} 님</h2>
               <span className="text-[11px] font-mono text-white/70 font-semibold tracking-tight mt-0.5">ID: jiyoon6911</span>
             </div>

@@ -116,7 +116,7 @@ export default function AnnouncementsView({ onClose }: AnnouncementsViewProps) {
               <div className="mt-5 text-xs text-gray-650 leading-relaxed font-medium font-sans">
                 {selectedNotice.summary}
                 <div className="mt-4 p-4.5 bg-sky-50 rounded-2xl border border-sky-100 text-sky-800 text-[11px] leading-relaxed">
-                  <strong>[춘천 버스Go 안내수칙]</strong>
+                  <strong>[춘천 버스GO 안내수칙]</strong>
                   <br className="mb-1" />
                   본 공지는 춘천시 실시간 BIS의 가이드와 통학 혼잡지 예측 노선을 기반으로 자동 배포되는 AI 뉴스피드입니다. 문의사항은 버스 안내 민원센터 혹은 마이페이지 [문의하기]를 활용하여 제출해주세요.
                 </div>
