@@ -71,18 +71,17 @@ export default function MainMapView({
   };
 
   // Compile top active/pinned buses dynamically as requested
-  // "자주타는 버스를 표시하고 고정하면 위에 뜨는거임! 없으면 기본 300, 7-2"
-  const activeTopBuses = [...pinned];
-  if (activeTopBuses.length < 1) {
-    activeTopBuses.push("300");
-  }
-  if (activeTopBuses.length < 2) {
-    const fallback = activeTopBuses[0] === "7-2" ? "300" : "7-2";
+  // "자주타는 버스를 표시하고 고정하면 위에 뜨는거임! 없으면 기본 300, 2"
+  // 최대 2개까지 고정하도록 제안되었으며, 상단 카드에 최대 2개 노출합니다.
+  const activeTopBuses = [...pinned].slice(0, 2);
+  if (activeTopBuses.length === 0) {
+    // 핀 고정이 없으면 기본 fallback 버스 노출
+    activeTopBuses.push("300", "2");
+  } else if (activeTopBuses.length === 1) {
+    // 핀 고정이 1개만 있으면 2 또는 300으로 보조 fallback 1개 노출 (총 2개 수준 맞추기)
+    const fallback = activeTopBuses[0] === "2" ? "300" : "2";
     activeTopBuses.push(fallback);
   }
-
-  const topBus1 = activeTopBuses[0];
-  const topBus2 = activeTopBuses[1];
 
   const getBusObj = (num: string): BusArrival => {
     return (
@@ -99,12 +98,19 @@ export default function MainMapView({
     );
   };
 
-  const bus1 = getBusObj(topBus1);
-  const bus2 = getBusObj(topBus2);
-
-  // General listing showing all buses so users can always interact with their pin/star status
+  // General listing showing only favorited buses
   const getBuses = (): BusArrival[] => {
-    return INITIAL_BUS_ARRIVALS;
+    const list = INITIAL_BUS_ARRIVALS.filter(b => favorites.includes(b.routeNumber));
+    return list.sort((a, b) => {
+      const aPinned = pinned.includes(a.routeNumber);
+      const bPinned = pinned.includes(b.routeNumber);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+
+      const valA = a.minutesValue ?? 9999;
+      const valB = b.minutesValue ?? 9999;
+      return valA - valB;
+    });
   };
 
   return (
@@ -132,7 +138,7 @@ export default function MainMapView({
       {/* 3. Bottom Information Sheet Container */}
       <div
         className={`w-full bg-white rounded-t-3xl shadow-2xl border-t border-slate-200 pointer-events-auto transition-all duration-300 ease-in-out flex flex-col ${
-          isSheetExpanded ? "h-[320px]" : "h-[125px]"
+          isSheetExpanded ? "h-[390px]" : "h-[195px]"
         }`}
         id="bottom-arrival-sheet"
       >
@@ -155,14 +161,17 @@ export default function MainMapView({
           
           {/* Quick Real-Time Highlight Info (Always Visible cards - Horizontal Stack layout from user image) */}
           <div className="flex flex-col gap-2.5 mb-3 select-none">
-            {[bus1, bus2].map((bus, idx) => {
+            {activeTopBuses.map((busNum, idx) => {
+              const bus = getBusObj(busNum);
               const isCity = bus.type === "city";
               const cong = getCongestionStyles(bus.congestion);
+              const isStarredInTop = favorites.includes(bus.routeNumber);
+              const isPinnedInTop = pinned.includes(bus.routeNumber);
               
               // Color styles matching the types:
               const colorClass = bus.color === "blue" ? "text-blue-500" :
-                                bus.color === "green" ? "text-emerald-500" :
-                                bus.color === "yellow" ? "text-amber-500" : "text-purple-500";
+                                 bus.color === "green" ? "text-emerald-500" :
+                                 bus.color === "yellow" ? "text-amber-500" : "text-purple-500";
               const borderGlow = isCity
                 ? `${cong.border} ${cong.glow}`
                 : "border border-gray-200 shadow-sm";
@@ -171,23 +180,51 @@ export default function MainMapView({
                 <div
                   key={`top-card-${idx}`}
                   onClick={() => onSelectBus(bus.routeNumber)}
-                  className={`bg-white rounded-2xl py-3 px-6 flex items-center justify-between hover:bg-slate-50 active:scale-99 transition-all cursor-pointer ${borderGlow}`}
+                  className={`bg-white rounded-2xl py-2 px-3 flex items-center justify-between hover:bg-slate-50 active:scale-99 transition-all cursor-pointer ${borderGlow}`}
                 >
-                  {/* Left: icon + route number */}
-                  <div className="flex items-center gap-2 w-1/4">
-                    <Bus className={`w-5 h-5 ${colorClass}`} />
-                    <span className={`text-[15px] font-extrabold tracking-tight ${colorClass}`}>
-                      {bus.routeNumber}
-                    </span>
+                  {/* Left Controls & Bus Badge */}
+                  <div className="flex items-center gap-1.5 min-w-[125px]">
+                    {/* Favorite button */}
+                    <button
+                      onClick={(e) => toggleFavorite(bus.routeNumber, e)}
+                      className="text-gray-300 hover:text-yellow-500 transition-colors p-0.5"
+                      title="즐겨찾기 추가/해제"
+                    >
+                      <Star className={`w-4 h-4 ${isStarredInTop ? "fill-yellow-500 text-yellow-500" : ""}`} />
+                    </button>
+
+                    {/* Pin button */}
+                    <button
+                      onClick={(e) => togglePin(bus.routeNumber, e)}
+                      className="text-gray-300 hover:text-orange-500 transition-colors p-0.5"
+                      title="상단 고정 해제"
+                    >
+                      <Pin className={`w-3.5 h-3.5 ${isPinnedInTop ? "fill-orange-500 text-orange-500 rotate-45" : ""}`} />
+                    </button>
+
+                    <div className="flex items-center gap-1 ml-0.5">
+                      <Bus className={`w-4 h-4 ${colorClass}`} />
+                      <span className={`text-[13px] font-black tracking-tight ${colorClass}`}>
+                        {bus.routeNumber}
+                      </span>
+                    </div>
+
+                    {/* Congestion Circle for City Buses */}
+                    {isCity && (
+                      <span
+                        className={`w-2.5 h-2.5 rounded-full border border-white shadow-xs ml-1 shrink-0 ${cong.dotColor}`}
+                        title="시내버스 실시간 혼잡도"
+                      />
+                    )}
                   </div>
 
                   {/* Center: destination name */}
-                  <div className="flex-1 text-center text-xs font-bold text-gray-800">
+                  <div className="flex-1 text-center text-xs font-bold text-slate-800 px-2 truncate">
                     {bus.destination}
                   </div>
 
                   {/* Right: remaining time in standard blue as requested */}
-                  <div className="w-1/4 text-right">
+                  <div className="text-right min-w-[65px]">
                     <span className="text-xs font-extrabold text-[#0066CC] animate-pulse-subtle">
                       {typeof bus.minutesLeft === "number" ? `${bus.minutesLeft}분 전` : bus.minutesLeft}
                     </span>
@@ -287,6 +324,16 @@ export default function MainMapView({
                     </div>
                   );
                 })}
+
+                {getBuses().length === 0 && (
+                  <div className="py-8 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-center text-xs font-bold text-slate-400 flex flex-col items-center justify-center gap-1.5 mt-2">
+                    <span>⭐</span>
+                    <span>즐겨찾기한 버스가 없습니다.</span>
+                    <span className="text-[10px] text-slate-400 font-normal">
+                      우측 하단 [더보기]에서 노선을 검색하고 즐겨찾기를 추가해보세요.
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* End status footnote */}

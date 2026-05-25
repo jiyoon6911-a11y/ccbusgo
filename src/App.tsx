@@ -42,7 +42,8 @@ export default function App() {
 
   const [pinned, setPinnedRaw] = useState<string[]>(() => {
     const saved = localStorage.getItem("cbus_pinned");
-    return saved ? JSON.parse(saved) : [];
+    const parsed = saved ? JSON.parse(saved) : ["300", "2"];
+    return Array.isArray(parsed) ? parsed.slice(0, 2) : ["300", "2"];
   });
 
   const [pinAlert, setPinAlert] = useState<string | null>(null);
@@ -67,8 +68,9 @@ export default function App() {
   const setPinned = (value: React.SetStateAction<string[]>) => {
     setPinnedRaw((prev) => {
       const next = typeof value === "function" ? value(prev) : value;
-      if (next.length > 3) {
-        setPinAlert("고정은 최대 3개까지 가능합니다!");
+      // Block only if we are actually adding a new pin and the size is > 2
+      if (next.length > prev.length && next.length > 2) {
+        setPinAlert("고정은 최대 2개까지 가능합니다!");
         return prev;
       }
       return next;
