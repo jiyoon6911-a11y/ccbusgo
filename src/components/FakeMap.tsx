@@ -216,14 +216,7 @@ export default function FakeMap({ onSelectStation, selectedStation, favorites = 
         </button>
       </div>
 
-      {/* Chuncheon LIVE Info Overlay */}
-      <div className="absolute top-[84px] left-4 bg-white/95 backdrop-blur-sm border border-slate-200/80 rounded-xl px-3.5 py-2 shadow-xs max-w-[200px] pointer-events-none z-10 font-sans">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] font-bold text-gray-500 tracking-wider">춘천 'LIVE' 버스</span>
-        </div>
-        <p className="text-[11px] text-gray-400 mt-0.5 font-medium">지도 화면 출처 및 연동: 춘천시 버스 정보 시스템</p>
-      </div>
+
     </div>
   );
 }

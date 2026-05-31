@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Bus, Grid, HelpCircle, User, Award, ArrowUp, Calendar, AlertTriangle, CloudSun, Clock, Navigation, Compass, Megaphone } from "lucide-react";
+import { Bus, Grid, HelpCircle, User, Award, ArrowUp, Calendar, AlertTriangle, CloudSun, Clock, Navigation, Compass, Megaphone, BookOpen, Smartphone } from "lucide-react";
 
 // Sub-components
 import LoginView from "./components/LoginView";
@@ -12,6 +12,7 @@ import AnnouncementsView from "./components/AnnouncementsView";
 import ChatbotView from "./components/ChatbotView";
 import MyPageView from "./components/MyPageView";
 import BusMoreView from "./components/BusMoreView";
+import CaseStudyView from "./components/CaseStudyView";
 
 type TabID = "card" | "lost" | "home" | "chat" | "mypage";
 
@@ -28,6 +29,7 @@ export default function App() {
   });
 
   // Current main operational sub-components states
+  const [mobileView, setMobileView] = useState<"app" | "case_study">("app");
   const [activeTab, setActiveTab] = useState<TabID>("home");
   const [selectedStation, setSelectedStation] = useState<string>("한림대학교");
   const [selectedBus, setSelectedBus] = useState<string | null>(null);
@@ -104,222 +106,270 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#CCDCFF] flex items-center justify-center p-0 md:p-6" id="app-root">
+    <div className="min-h-screen bg-[#DDE7FF] text-slate-850 flex items-center justify-center p-0 xl:p-8 font-sans overflow-hidden" id="app-root">
       
-      {/* 
-        Responsive Mobile Mockup Shell Framing:
-        Stays full-screen on mobile viewports for an organic native experience, 
-        and turns into a gorgeous physical hand-held bezel on wide screens.
-      */}
-      <div className="relative w-full h-[100vh] md:w-[390px] md:h-[844px] bg-slate-100 md:rounded-[44px] md:border-[10px] md:border-slate-800 md:shadow-2xl overflow-hidden flex flex-col transition-all duration-300">
+      {/* On desktop/wide viewports: Split Grid container. On mobile: Single screen container matching toggled display */}
+      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch justify-center h-screen lg:h-[860px] gap-6 lg:bg-slate-950/20 lg:p-6 lg:rounded-[44px] lg:border lg:border-slate-350/20">
         
-        {/* Mobile Status Sensor Notch Accent */}
-        <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-50 pointer-events-none" />
+        {/* VIEW 1: Case Study Panel. 
+            On desktop: stays fixed side-by-side next to the app
+            On mobile: visible ONLY when mobileView is "case_study" */}
+        <div className={`flex-1 h-full lg:rounded-[32px] overflow-hidden border border-slate-800/10 lg:shadow-2xl transition-all duration-300 ${
+          mobileView === "case_study" ? "flex" : "hidden lg:flex"
+        }`}>
+          <CaseStudyView />
+        </div>
 
-        {/* Dynamic Display Screens Container */}
-        <div className="flex-1 relative overflow-hidden bg-white">
+        {/* VIEW 2: Actual Interactive Phone Frame & Live Appulator 
+            On desktop: always visible next to the case study
+            On mobile: visible ONLY when mobileView is "app" */}
+        <div className={`relative flex items-center justify-center shrink-0 transition-all duration-300 h-full ${
+          mobileView === "app" ? "flex w-full lg:w-auto" : "hidden lg:flex"
+        }`}>
           
-          {!isLoggedIn ? (
-            /* 1. Gate screen */
-            <LoginView onLogin={handleLogin} />
-          ) : (
-            /* 2. Authenticated Application Shell */
-            <div className="w-full h-full flex flex-col justify-between relative">
-              
-              {/* Floating circular announcement button with Megaphone icon */}
-              <button
-                onClick={() => setIsAnnouncementsOpen(true)}
-                className="absolute top-4 right-4 w-11 h-11 bg-white hover:bg-slate-50 text-blue-600 rounded-full flex items-center justify-center border border-slate-200 shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer z-50"
-                id="bell-announcements-btn"
-              >
-                <Megaphone className="w-5 h-5 text-blue-600" />
-                <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-red-500 border border-white" />
-              </button>
+          {/* Responsive Mobile Mockup Shell Framing */}
+          <div className="relative w-full h-full md:w-[390px] md:h-[844px] bg-slate-100 md:rounded-[44px] md:border-[10px] md:border-slate-800 md:shadow-2xl overflow-hidden flex flex-col transition-all duration-300">
+            
+            {/* Mobile Status Sensor Notch Accent */}
+            <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-50 pointer-events-none" />
 
-              {/* Pin limit reached notification toast */}
-              {pinAlert && (
-                <div 
-                  className="absolute top-16 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 border border-slate-800 text-white text-[11px] font-black px-4.5 py-3 rounded-2xl shadow-xl flex items-center gap-2 max-w-[85%] whitespace-nowrap animate-bounce"
-                  style={{ animationDuration: "1s" }}
-                >
-                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>{pinAlert}</span>
+            {/* Dynamic Display Screens Container */}
+            <div className="flex-1 relative overflow-hidden bg-white">
+              
+              {!isLoggedIn ? (
+                /* 1. Gate screen */
+                <LoginView onLogin={handleLogin} />
+              ) : (
+                /* 2. Authenticated Application Shell */
+                <div className="w-full h-full flex flex-col justify-between relative">
+                  
+                  {/* Floating circular announcement button with Megaphone icon */}
+                  <button
+                    onClick={() => setIsAnnouncementsOpen(true)}
+                    className="absolute top-4 right-4 w-11 h-11 bg-white hover:bg-slate-50 text-blue-600 rounded-full flex items-center justify-center border border-slate-200 shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer z-50"
+                    id="bell-announcements-btn"
+                  >
+                    <Megaphone className="w-5 h-5 text-blue-600" />
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-red-500 border border-white" />
+                  </button>
+
+                  {/* Pin limit reached notification toast */}
+                  {pinAlert && (
+                    <div 
+                      className="absolute top-16 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 border border-slate-800 text-white text-[11px] font-black px-4.5 py-3 rounded-2xl shadow-xl flex items-center gap-2 max-w-[85%] whitespace-nowrap animate-bounce"
+                      style={{ animationDuration: "1s" }}
+                    >
+                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                      <span>{pinAlert}</span>
+                    </div>
+                  )}
+
+                  {/* Central Dynamic Content Switcher */}
+                  <main className="flex-1 relative overflow-hidden bg-slate-50">
+                    
+                    {activeTab === "home" && (
+                      <div className="absolute inset-0 w-full h-full">
+                        {/* Background Simulator Map Layer */}
+                        <FakeMap
+                          onSelectStation={handleSelectStationFromMap}
+                          selectedStation={selectedStation}
+                          favorites={favorites}
+                        />
+
+                        {/* HUD Layer Overlay containing sheets and actions */}
+                        <MainMapView
+                          onSelectBus={(busNum) => setSelectedBus(busNum)}
+                          onSearchOpen={() => setIsSearchOpen(true)}
+                          currentStation={selectedStation}
+                          favorites={favorites}
+                          setFavorites={setFavorites}
+                          pinned={pinned}
+                          setPinned={setPinned}
+                        />
+                      </div>
+                    )}
+
+                    {activeTab === "card" && (
+                      /* BUS MORE INFO BOARD: High-density 14-bus expanded dynamic view console */
+                      <BusMoreView
+                        onSelectBus={(busNum) => setSelectedBus(busNum)}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
+                        pinned={pinned}
+                        setPinned={setPinned}
+                      />
+                    )}
+
+                    {activeTab === "lost" && (
+                      /* LOST AND FOUND VIEW: Replicates the 14th screenshot */
+                      <LostItemsView />
+                    )}
+
+                    {activeTab === "chat" && (
+                      /* COMPLAINT CHATBOT FAQ VIEW: Replicates the 16th screenshot */
+                      <ChatbotView />
+                    )}
+
+                    {activeTab === "mypage" && (
+                      /* PROFILE COCKPIT SETTINGS VIEW: Replicates the 17th screenshot */
+                      <MyPageView
+                        username={username}
+                        station={mainStation}
+                        onLogout={handleLogout}
+                        onAnnouncementsClick={() => setIsAnnouncementsOpen(true)}
+                        onBackClick={() => setActiveTab("home")}
+                        onUpdateUser={(newUsername) => {
+                          setUsername(newUsername);
+                          localStorage.setItem("cbus_username", newUsername);
+                        }}
+                        onUpdateStation={(newStation) => {
+                          setMainStation(newStation);
+                          localStorage.setItem("cbus_station", newStation);
+                        }}
+                      />
+                    )}
+
+                    {/* SLIDING TRANSITION OVERLAY 1: Place Search */}
+                    {isSearchOpen && (
+                      <SearchView
+                        onClose={() => setIsSearchOpen(false)}
+                        onSelectBus={(busNum) => {
+                          setSelectedBus(busNum);
+                          setIsSearchOpen(false);
+                        }}
+                        onSelectStation={(stationName) => {
+                          setSelectedStation(stationName);
+                          setIsSearchOpen(false);
+                        }}
+                      />
+                    )}
+
+                    {/* SLIDING TRANSITION OVERLAY 2: Bus Route Timeline details */}
+                    {selectedBus && (
+                      <BusDetailView
+                        busNumber={selectedBus}
+                        onClose={() => setSelectedBus(null)}
+                      />
+                    )}
+
+                    {/* SLIDING TRANSITION OVERLAY 3: Bulletins and Announcements Board */}
+                    {isAnnouncementsOpen && (
+                      <AnnouncementsView
+                        onClose={() => setIsAnnouncementsOpen(false)}
+                      />
+                    )}
+
+                  </main>
+
+                  {/* 5-Tab Navigation Bar layout matching your provided UI illustrations */}
+                  <nav className="bg-white border-t border-gray-200 px-2 py-1.5 flex justify-around items-center shrink-0 z-30 select-none shadow-md">
+                    
+                    {/* Tab: Bus more details cockpit console */}
+                    <button
+                      onClick={() => {
+                        setActiveTab("card");
+                        setSelectedBus(null);
+                      }}
+                      className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
+                        activeTab === "card" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
+                      }`}
+                      id="tab-btn-card"
+                    >
+                      <Bus className="w-5 h-5" />
+                      <span className="text-[9px] font-extrabold tracking-tight mt-1">더보기</span>
+                    </button>
+
+                    {/* Tab: Lost & Found */}
+                    <button
+                      onClick={() => {
+                        setActiveTab("lost");
+                        setSelectedBus(null);
+                      }}
+                      className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
+                        activeTab === "lost" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
+                      }`}
+                      id="tab-btn-lost"
+                    >
+                      <Grid className="w-5 h-5" />
+                      <span className="text-[9px] font-extrabold tracking-tight mt-1">분실물</span>
+                    </button>
+
+                    {/* Tab: Main Navigation map focus */}
+                    <button
+                      onClick={() => {
+                        setActiveTab("home");
+                        setSelectedBus(null);
+                      }}
+                      className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
+                        activeTab === "home" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
+                      }`}
+                      id="tab-btn-home"
+                    >
+                      <Compass className="w-5 h-5" />
+                      <span className="text-[9px] font-extrabold tracking-tight mt-1">홈지도</span>
+                    </button>
+
+                    {/* Tab: AI Live Chat FAQ */}
+                    <button
+                      onClick={() => {
+                        setActiveTab("chat");
+                        setSelectedBus(null);
+                      }}
+                      className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
+                        activeTab === "chat" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
+                      }`}
+                      id="tab-btn-chat"
+                    >
+                      <HelpCircle className="w-5 h-5" />
+                      <span className="text-[9px] font-extrabold tracking-tight mt-1">AI상담</span>
+                    </button>
+
+                    {/* Tab: MyPage Accounts */}
+                    <button
+                      onClick={() => {
+                        setActiveTab("mypage");
+                        setSelectedBus(null);
+                      }}
+                      className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
+                        activeTab === "mypage" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
+                      }`}
+                      id="tab-btn-mypage"
+                    >
+                      <User className="w-5 h-5" />
+                      <span className="text-[9px] font-extrabold tracking-tight mt-1">마이</span>
+                    </button>
+
+                  </nav>
+
                 </div>
               )}
 
-              {/* Central Dynamic Content Switcher */}
-              <main className="flex-1 relative overflow-hidden bg-slate-50">
-                
-                {activeTab === "home" && (
-                  <div className="absolute inset-0 w-full h-full">
-                    {/* Background Simulator Map Layer */}
-                    <FakeMap
-                      onSelectStation={handleSelectStationFromMap}
-                      selectedStation={selectedStation}
-                      favorites={favorites}
-                    />
-
-                    {/* HUD Layer Overlay containing sheets and actions */}
-                    <MainMapView
-                      onSelectBus={(busNum) => setSelectedBus(busNum)}
-                      onSearchOpen={() => setIsSearchOpen(true)}
-                      currentStation={selectedStation}
-                      favorites={favorites}
-                      setFavorites={setFavorites}
-                      pinned={pinned}
-                      setPinned={setPinned}
-                    />
-                  </div>
-                )}
-
-                {activeTab === "card" && (
-                  /* BUS MORE INFO BOARD: High-density 14-bus expanded dynamic view console */
-                  <BusMoreView
-                    onSelectBus={(busNum) => setSelectedBus(busNum)}
-                    favorites={favorites}
-                    setFavorites={setFavorites}
-                    pinned={pinned}
-                    setPinned={setPinned}
-                  />
-                )}
-
-                {activeTab === "lost" && (
-                  /* LOST AND FOUND VIEW: Replicates the 14th screenshot */
-                  <LostItemsView />
-                )}
-
-                {activeTab === "chat" && (
-                  /* COMPLAINT CHATBOT FAQ VIEW: Replicates the 16th screenshot */
-                  <ChatbotView />
-                )}
-
-                {activeTab === "mypage" && (
-                  /* PROFILE COCKPIT SETTINGS VIEW: Replicates the 17th screenshot */
-                  <MyPageView
-                    username={username}
-                    station={mainStation}
-                    onLogout={handleLogout}
-                    onAnnouncementsClick={() => setIsAnnouncementsOpen(true)}
-                  />
-                )}
-
-                {/* SLIDING TRANSITION OVERLAY 1: Place Search */}
-                {isSearchOpen && (
-                  <SearchView
-                    onClose={() => setIsSearchOpen(false)}
-                    onSelectBus={(busNum) => {
-                      setSelectedBus(busNum);
-                      setIsSearchOpen(false);
-                    }}
-                    onSelectStation={(stationName) => {
-                      setSelectedStation(stationName);
-                      setIsSearchOpen(false);
-                    }}
-                  />
-                )}
-
-                {/* SLIDING TRANSITION OVERLAY 2: Bus Route Timeline details */}
-                {selectedBus && (
-                  <BusDetailView
-                    busNumber={selectedBus}
-                    onClose={() => setSelectedBus(null)}
-                  />
-                )}
-
-                {/* SLIDING TRANSITION OVERLAY 3: Bulletins and Announcements Board */}
-                {isAnnouncementsOpen && (
-                  <AnnouncementsView
-                    onClose={() => setIsAnnouncementsOpen(false)}
-                  />
-                )}
-
-              </main>
-
-              {/* 5-Tab Navigation Bar layout matching your provided UI illustrations */}
-              <nav className="bg-white border-t border-gray-200 px-2 py-1.5 flex justify-around items-center shrink-0 z-30 select-none shadow-md">
-                
-                {/* Tab: Bus more details cockpit console */}
-                <button
-                  onClick={() => {
-                    setActiveTab("card");
-                    setSelectedBus(null);
-                  }}
-                  className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
-                    activeTab === "card" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
-                  }`}
-                  id="tab-btn-card"
-                >
-                  <Bus className="w-5 h-5" />
-                  <span className="text-[9px] font-extrabold tracking-tight mt-1">더보기</span>
-                </button>
-
-                {/* Tab: Lost & Found */}
-                <button
-                  onClick={() => {
-                    setActiveTab("lost");
-                    setSelectedBus(null);
-                  }}
-                  className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
-                    activeTab === "lost" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
-                  }`}
-                  id="tab-btn-lost"
-                >
-                  <Grid className="w-5 h-5" />
-                  <span className="text-[9px] font-extrabold tracking-tight mt-1">분실물</span>
-                </button>
-
-                {/* Tab: Main Navigation map focus */}
-                <button
-                  onClick={() => {
-                    setActiveTab("home");
-                    setSelectedBus(null);
-                  }}
-                  className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
-                    activeTab === "home" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
-                  }`}
-                  id="tab-btn-home"
-                >
-                  <Compass className="w-5 h-5" />
-                  <span className="text-[9px] font-extrabold tracking-tight mt-1">홈지도</span>
-                </button>
-
-                {/* Tab: AI Live Chat FAQ */}
-                <button
-                  onClick={() => {
-                    setActiveTab("chat");
-                    setSelectedBus(null);
-                  }}
-                  className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
-                    activeTab === "chat" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
-                  }`}
-                  id="tab-btn-chat"
-                >
-                  <HelpCircle className="w-5 h-5" />
-                  <span className="text-[9px] font-extrabold tracking-tight mt-1">AI상담</span>
-                </button>
-
-                {/* Tab: MyPage Accounts */}
-                <button
-                  onClick={() => {
-                    setActiveTab("mypage");
-                    setSelectedBus(null);
-                  }}
-                  className={`flex flex-col items-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer ${
-                    activeTab === "mypage" ? "text-blue-600 bg-blue-50/50" : "text-gray-400 hover:text-gray-600"
-                  }`}
-                  id="tab-btn-mypage"
-                >
-                  <User className="w-5 h-5" />
-                  <span className="text-[9px] font-extrabold tracking-tight mt-1">마이</span>
-                </button>
-
-              </nav>
-
             </div>
-          )}
+
+          </div>
 
         </div>
 
+      </div>
+
+      {/* Floating Interactive Toggle Switch for touchscreens/mobiles */}
+      <div className="lg:hidden fixed bottom-18 right-4 z-[9999] flex flex-col gap-2">
+        <button
+          onClick={() => setMobileView(mobileView === "app" ? "case_study" : "app")}
+          className="bg-slate-900 border border-slate-700 text-white shadow-2xl px-3.5 py-3 rounded-full flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer font-black text-xs"
+        >
+          {mobileView === "app" ? (
+            <>
+              <BookOpen className="w-4 h-4 text-blue-400" />
+              <span>기획 백서 보기</span>
+            </>
+          ) : (
+            <>
+              <Smartphone className="w-4 h-4 text-emerald-400" />
+              <span>라이브 앱 체험</span>
+            </>
+          )}
+        </button>
       </div>
 
     </div>

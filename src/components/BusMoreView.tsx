@@ -11,8 +11,6 @@ interface BusMoreViewProps {
   setPinned: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-type FilterType = "all" | "highway_only" | "shuttle_only";
-
 export default function BusMoreView({
   onSelectBus,
   favorites,
@@ -20,8 +18,16 @@ export default function BusMoreView({
   pinned,
   setPinned
 }: BusMoreViewProps) {
-  const [filter, setFilter] = useState<FilterType>("all");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(["city", "shuttle", "highway"]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const toggleType = (type: string) => {
+    setSelectedTypes(prev =>
+      prev.includes(type)
+        ? (prev.length > 1 ? prev.filter(t => t !== type) : prev)
+        : [...prev, type]
+    );
+  };
 
   const toggleFavorite = (routeNumber: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -44,16 +50,7 @@ export default function BusMoreView({
   const getProcessedBuses = (): BusArrival[] => {
     let list = [...INITIAL_BUS_ARRIVALS];
 
-    if (filter === "all") {
-      // "기본 정렬은 시내버스만"
-      list = list.filter(b => b.type === "city");
-    } else if (filter === "highway_only") {
-      // "기본 + 시외(고속)는 이 두가지가 동시에"
-      list = list.filter(b => b.type === "city" || b.type === "highway");
-    } else if (filter === "shuttle_only") {
-      // "기본 + 셔틀은 이 두가지가 동시에"
-      list = list.filter(b => b.type === "city" || b.type === "shuttle");
-    }
+    list = list.filter(b => selectedTypes.includes(b.type));
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -119,9 +116,6 @@ export default function BusMoreView({
             <span className="text-[10px] font-bold text-blue-600 tracking-wide uppercase">Interactive Bus Console</span>
             <h3 className="text-sm font-black text-gray-800">춘천 버스더보기 대시보드</h3>
           </div>
-          <span className="text-[11px] font-black bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full border border-blue-100">
-            총 {busesToShow.length}대 가동
-          </span>
         </div>
 
         {/* Real-time search in console */}
@@ -136,42 +130,45 @@ export default function BusMoreView({
           <Search className="w-4 h-4 text-gray-400 absolute right-3 top-3" />
         </div>
 
-        {/* Alignment controls - Matches the visual rules */}
+        {/* Bus Type Multi-Select Filters */}
         <div className="flex flex-col gap-1.5 pt-1">
           <span className="text-[9.5px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1">
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            정렬 필터링 선택
+            버스 종류 필터 (복수 선택 가능)
           </span>
           <div className="grid grid-cols-3 gap-1.5 self-stretch">
             <button
-              onClick={() => setFilter("all")}
-              className={`py-2 px-1 rounded-xl text-[10px] font-black tracking-tight border transition-all cursor-pointer ${
-                filter === "all"
-                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-white text-gray-500 border-slate-200 hover:bg-slate-100"
+              onClick={() => toggleType("city")}
+              className={`py-2 px-1 flex flex-col items-center justify-center gap-1 rounded-xl text-[10.5px] font-black border transition-all cursor-pointer ${
+                selectedTypes.includes("city")
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-300 shadow-xs"
+                  : "bg-white text-slate-400 border-slate-200 hover:bg-slate-50"
               }`}
             >
-              기본 (시내버스)
+              <span className={`w-1.5 h-1.5 rounded-full ${selectedTypes.includes("city") ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
+              시내버스
             </button>
             <button
-              onClick={() => setFilter("highway_only")}
-              className={`py-2 px-1 rounded-xl text-[10px] font-black tracking-tight border transition-all cursor-pointer ${
-                filter === "highway_only"
-                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-white text-gray-500 border-slate-200 hover:bg-slate-100"
+              onClick={() => toggleType("highway")}
+              className={`py-2 px-1 flex flex-col items-center justify-center gap-1 rounded-xl text-[10.5px] font-black border transition-all cursor-pointer ${
+                selectedTypes.includes("highway")
+                  ? "bg-purple-50 text-purple-700 border-purple-300 shadow-xs"
+                  : "bg-white text-slate-400 border-slate-200 hover:bg-slate-50"
               }`}
             >
-              시내 + 시외/고속
+              <span className={`w-1.5 h-1.5 rounded-full ${selectedTypes.includes("highway") ? "bg-purple-500 animate-pulse" : "bg-slate-300"}`} />
+              시외 / 고속
             </button>
             <button
-              onClick={() => setFilter("shuttle_only")}
-              className={`py-2 px-1 rounded-xl text-[10px] font-black tracking-tight border transition-all cursor-pointer ${
-                filter === "shuttle_only"
-                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-white text-gray-500 border-slate-200 hover:bg-slate-100"
+              onClick={() => toggleType("shuttle")}
+              className={`py-2 px-1 flex flex-col items-center justify-center gap-1 rounded-xl text-[10.5px] font-black border transition-all cursor-pointer ${
+                selectedTypes.includes("shuttle")
+                  ? "bg-amber-50 text-amber-700 border-amber-300 shadow-xs"
+                  : "bg-white text-slate-400 border-slate-200 hover:bg-slate-50"
               }`}
             >
-              시내 + 대학셔틀
+              <span className={`w-1.5 h-1.5 rounded-full ${selectedTypes.includes("shuttle") ? "bg-amber-500 animate-pulse" : "bg-slate-300"}`} />
+              셔틀버스
             </button>
           </div>
         </div>
