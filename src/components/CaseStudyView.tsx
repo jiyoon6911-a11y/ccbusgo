@@ -261,7 +261,7 @@ export default function CaseStudyView() {
                   <div className="absolute top-0 right-0 w-36 h-36 bg-blue-600/10 rounded-full blur-2xl pointer-events-none" />
                   <span className="text-[10px] text-blue-400 font-extrabold tracking-tight uppercase">SLOGAN</span>
                   <p className="text-lg font-black text-white leading-snug mt-1 text-sky-200">
-                    "나의 5분을 아끼는 방 안에서의 타임어택, <br />내 손안의 춘천 버스 매니저 🚌"
+                    "당신의 5분을 아껴주는, <br />내 손안의 춘천 버스 매니저 🚌"
                   </p>
                   <p className="text-xs text-slate-400 mt-2.5 leading-relaxed border-t border-slate-800 pt-3">
                     춘천은 시내 중심가 대비 시외 배차가 원활하지 않은 전형적인 지방 소도시의 특성을 공유하나, 여러 대학교가 응집하여 학생 통학 인구수가 상재하는 <strong>고고도 대학 도시</strong>입니다. 대학생이라는 단일 코어 사용자의 이동 양상(시내버스 점거, 대학 셔틀 시간표 교차 조회, 눈·비 올 때의 연착 불안)을 관통하는 서비스 솔루션을 구축하는 데 목적이 있습니다.
