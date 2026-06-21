@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Bus, Grid, HelpCircle, User, Award, ArrowUp, Calendar, AlertTriangle, CloudSun, Clock, Navigation, Compass, Megaphone, BookOpen, Smartphone } from "lucide-react";
+import { Bus, Grid, HelpCircle, User, Award, ArrowUp, Calendar, AlertTriangle, CloudSun, Clock, Navigation, Compass, Megaphone } from "lucide-react";
 
 // Sub-components
 import LoginView from "./components/LoginView";
@@ -12,7 +12,6 @@ import AnnouncementsView from "./components/AnnouncementsView";
 import ChatbotView from "./components/ChatbotView";
 import MyPageView from "./components/MyPageView";
 import BusMoreView from "./components/BusMoreView";
-import CaseStudyView from "./components/CaseStudyView";
 
 type TabID = "card" | "lost" | "home" | "chat" | "mypage";
 
@@ -29,7 +28,6 @@ export default function App() {
   });
 
   // Current main operational sub-components states
-  const [mobileView, setMobileView] = useState<"app" | "case_study">("app");
   const [activeTab, setActiveTab] = useState<TabID>("home");
   const [selectedStation, setSelectedStation] = useState<string>("한림대학교");
   const [selectedBus, setSelectedBus] = useState<string | null>(null);
@@ -106,66 +104,47 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#DDE7FF] text-slate-850 flex items-center justify-center p-0 xl:p-8 font-sans overflow-hidden" id="app-root">
+    <div className="min-h-screen bg-[#DDE7FF] text-slate-850 flex items-center justify-center p-0 md:p-8 font-sans overflow-hidden" id="app-root">
       
-      {/* On desktop/wide viewports: Split Grid container. On mobile: Single screen container matching toggled display */}
-      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch justify-center h-screen lg:h-[860px] gap-6 lg:bg-slate-950/20 lg:p-6 lg:rounded-[44px] lg:border lg:border-slate-350/20">
+      {/* Responsive Mobile Mockup Shell Framing */}
+      <div className="relative w-full h-full md:w-[390px] md:h-[844px] bg-slate-100 md:rounded-[44px] md:border-[10px] md:border-slate-800 md:shadow-2xl overflow-hidden flex flex-col transition-all duration-300">
         
-        {/* VIEW 1: Case Study Panel. 
-            On desktop: stays fixed side-by-side next to the app
-            On mobile: visible ONLY when mobileView is "case_study" */}
-        <div className={`flex-1 h-full lg:rounded-[32px] overflow-hidden border border-slate-800/10 lg:shadow-2xl transition-all duration-300 ${
-          mobileView === "case_study" ? "flex" : "hidden lg:flex"
-        }`}>
-          <CaseStudyView />
-        </div>
+        {/* Mobile Status Sensor Notch Accent */}
+        <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-50 pointer-events-none" />
 
-        {/* VIEW 2: Actual Interactive Phone Frame & Live Appulator 
-            On desktop: always visible next to the case study
-            On mobile: visible ONLY when mobileView is "app" */}
-        <div className={`relative flex items-center justify-center shrink-0 transition-all duration-300 h-full ${
-          mobileView === "app" ? "flex w-full lg:w-auto" : "hidden lg:flex"
-        }`}>
+        {/* Dynamic Display Screens Container */}
+        <div className="flex-1 relative overflow-hidden bg-white">
           
-          {/* Responsive Mobile Mockup Shell Framing */}
-          <div className="relative w-full h-full md:w-[390px] md:h-[844px] bg-slate-100 md:rounded-[44px] md:border-[10px] md:border-slate-800 md:shadow-2xl overflow-hidden flex flex-col transition-all duration-300">
-            
-            {/* Mobile Status Sensor Notch Accent */}
-            <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-50 pointer-events-none" />
-
-            {/* Dynamic Display Screens Container */}
-            <div className="flex-1 relative overflow-hidden bg-white">
+          {!isLoggedIn ? (
+            /* 1. Gate screen */
+            <LoginView onLogin={handleLogin} />
+          ) : (
+            /* 2. Authenticated Application Shell */
+            <div className="w-full h-full flex flex-col justify-between relative">
               
-              {!isLoggedIn ? (
-                /* 1. Gate screen */
-                <LoginView onLogin={handleLogin} />
-              ) : (
-                /* 2. Authenticated Application Shell */
-                <div className="w-full h-full flex flex-col justify-between relative">
-                  
-                  {/* Floating circular announcement button with Megaphone icon */}
-                  <button
-                    onClick={() => setIsAnnouncementsOpen(true)}
-                    className="absolute top-4 right-4 w-11 h-11 bg-white hover:bg-slate-50 text-blue-600 rounded-full flex items-center justify-center border border-slate-200 shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer z-50"
-                    id="bell-announcements-btn"
-                  >
-                    <Megaphone className="w-5 h-5 text-blue-600" />
-                    <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-red-500 border border-white" />
-                  </button>
+              {/* Floating circular announcement button with Megaphone icon */}
+              <button
+                onClick={() => setIsAnnouncementsOpen(true)}
+                className="absolute top-4 right-4 w-11 h-11 bg-white hover:bg-slate-50 text-blue-600 rounded-full flex items-center justify-center border border-slate-200 shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer z-50"
+                id="bell-announcements-btn"
+              >
+                <Megaphone className="w-5 h-5 text-blue-600" />
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-red-500 border border-white" />
+              </button>
 
-                  {/* Pin limit reached notification toast */}
-                  {pinAlert && (
-                    <div 
-                      className="absolute top-16 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 border border-slate-800 text-white text-[11px] font-black px-4.5 py-3 rounded-2xl shadow-xl flex items-center gap-2 max-w-[85%] whitespace-nowrap animate-bounce"
-                      style={{ animationDuration: "1s" }}
-                    >
-                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-                      <span>{pinAlert}</span>
-                    </div>
-                  )}
+              {/* Pin limit reached notification toast */}
+              {pinAlert && (
+                <div 
+                  className="absolute top-16 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 border border-slate-800 text-white text-[11px] font-black px-4.5 py-3 rounded-2xl shadow-xl flex items-center gap-2 max-w-[85%] whitespace-nowrap animate-bounce"
+                  style={{ animationDuration: "1s" }}
+                >
+                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span>{pinAlert}</span>
+                </div>
+              )}
 
-                  {/* Central Dynamic Content Switcher */}
-                  <main className="flex-1 relative overflow-hidden bg-slate-50">
+              {/* Central Dynamic Content Switcher */}
+              <main className="flex-1 relative overflow-hidden bg-slate-50">
                     
                     {activeTab === "home" && (
                       <div className="absolute inset-0 w-full h-full">
@@ -347,30 +326,6 @@ export default function App() {
             </div>
 
           </div>
-
-        </div>
-
-      </div>
-
-      {/* Floating Interactive Toggle Switch for touchscreens/mobiles */}
-      <div className="lg:hidden fixed bottom-18 right-4 z-[9999] flex flex-col gap-2">
-        <button
-          onClick={() => setMobileView(mobileView === "app" ? "case_study" : "app")}
-          className="bg-slate-900 border border-slate-700 text-white shadow-2xl px-3.5 py-3 rounded-full flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer font-black text-xs"
-        >
-          {mobileView === "app" ? (
-            <>
-              <BookOpen className="w-4 h-4 text-blue-400" />
-              <span>기획 백서 보기</span>
-            </>
-          ) : (
-            <>
-              <Smartphone className="w-4 h-4 text-emerald-400" />
-              <span>라이브 앱 체험</span>
-            </>
-          )}
-        </button>
-      </div>
 
     </div>
   );
