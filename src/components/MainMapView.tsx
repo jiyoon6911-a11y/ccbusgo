@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { INITIAL_BUS_ARRIVALS, INACTIVE_BUS_ARRIVALS, SHUTTLE_BUS_ARRIVALS, HIGHWAY_BUS_ARRIVALS } from "../data";
 import { BusArrival } from "../types";
-import { MapPin, Search, Star, CloudSun, ChevronUp, ChevronDown, Check, Info, Bus, Pin } from "lucide-react";
+import { MapPin, Search, Star, CloudSun, CloudRain, ChevronUp, ChevronDown, Check, Info, Bus, Pin, AlertTriangle } from "lucide-react";
 
 interface MainMapViewProps {
   onSelectBus: (busNumber: string) => void;
@@ -24,6 +24,23 @@ export default function MainMapView({
 }: MainMapViewProps) {
   const [isSheetExpanded, setIsSheetExpanded] = useState(true);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(["city"]);
+  const [weatherMode, setWeatherMode] = useState<"sunny" | "extreme">("sunny");
+  const [showHapticToast, setShowHapticToast] = useState(false);
+
+  const toggleWeather = () => {
+    const nextMode = weatherMode === "sunny" ? "extreme" : "sunny";
+    setWeatherMode(nextMode);
+    if (nextMode === "extreme") {
+      // Short and strong double haptic burst (200ms on, 100ms gap, 200ms on)
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+      setShowHapticToast(true);
+      setTimeout(() => {
+        setShowHapticToast(false);
+      }, 3500);
+    }
+  };
 
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -127,12 +144,58 @@ export default function MainMapView({
   return (
     <div className="absolute inset-0 flex flex-col justify-end pointer-events-none z-10 font-sans">
       
-      {/* 1. Left Weather Float Button (screenshot 2) */}
-      <div className="absolute bottom-[350px] left-4 pointer-events-auto flex flex-col items-center gap-1.5 z-10">
-        <div className="w-13 h-13 bg-[#127be5] rounded-full shadow-lg flex flex-col justify-center items-center text-white border border-blue-400 hover:bg-blue-600 active:scale-95 transition-all text-center">
-          <CloudSun className="w-5 h-5" />
-          <span className="text-[10px] font-bold mt-0.5">20°C</span>
+      {/* ⚠️ High-urgency alert banner: Spawns at the absolute top of the 0-Depth 메인 대시보드 upon weather degradation */}
+      {weatherMode === "extreme" && (
+        <div className="absolute top-4 left-4 right-4 pointer-events-auto z-50 animate-bounce" style={{ animationDuration: "1.2s" }}>
+          <div className="bg-red-600 border border-red-500 text-white rounded-2xl p-3 shadow-2xl flex items-start gap-2.5 relative overflow-hidden">
+            <div className="absolute inset-0 bg-red-700/25 animate-pulse" />
+            <AlertTriangle className="w-5 h-5 text-white shrink-0 mt-0.5 animate-pulse z-10" />
+            <div className="flex-1 space-y-0.5 z-10">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9.5px] font-black uppercase bg-red-800 text-red-100 px-1.5 py-0.5 rounded tracking-wide">기상정체 경고</span>
+                <span className="text-[9px] font-bold text-red-200">배차 교차 보정 지연율 +42.4%</span>
+              </div>
+              <p className="text-[11.5px] font-extrabold tracking-tight leading-snug mt-1 text-white">
+                춘천 집중호우로 인해 시내·대학로 구간 연착이 누적되었습니다.
+              </p>
+              <p className="text-[10px] text-red-100/95 leading-none mt-1">
+                ※ 타임어택 보정이 적용되었습니다. 방 안에서 따뜻하게 대기하다 출발하세요!
+              </p>
+            </div>
+          </div>
         </div>
+      )}
+
+      {/* 📳 Simulated haptic vibration on-screen pulse notification */}
+      {showHapticToast && (
+        <div className="absolute top-28 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-fade-in">
+          <div className="bg-slate-900/95 border border-slate-800 text-slate-100 text-[10px] font-black font-sans px-3 py-2 rounded-xl shadow-xl flex items-center gap-1.5 backdrop-blur-xs">
+            <span className="animate-ping text-rose-500">●</span>
+            <span>📳 [스마트폰 햅틱 진동 피드백 작동 완료]</span>
+          </div>
+        </div>
+      )}
+
+      {/* 1. Left Weather Float Button (screenshot 2) - Clickable to toggle real-time delay delay rate */}
+      <div className="absolute bottom-[350px] left-4 pointer-events-auto flex flex-col items-center gap-1.5 z-10">
+        <button
+          onClick={toggleWeather}
+          className={`w-13 h-13 rounded-full shadow-lg flex flex-col justify-center items-center text-white border transition-all cursor-pointer text-center ${
+            weatherMode === "extreme"
+              ? "bg-red-600 border-red-400 hover:bg-red-700 animate-pulse"
+              : "bg-[#127be5] border-blue-400 hover:bg-blue-600 active:scale-95"
+          }`}
+          title="날씨/실시간 기상 지연 보정 시뮬레이터 (클릭)"
+        >
+          {weatherMode === "extreme" ? (
+            <CloudRain className="w-5 h-5 animate-bounce" />
+          ) : (
+            <CloudSun className="w-5 h-5" />
+          )}
+          <span className="text-[9px] font-black mt-0.5">
+            {weatherMode === "extreme" ? "7°C 폭우" : "20°C 맑음"}
+          </span>
+        </button>
       </div>
 
       {/* 2. Right Floating Search magnifying glass Button (screenshot 2) */}
@@ -191,7 +254,9 @@ export default function MainMapView({
                 <div
                   key={`top-card-${idx}`}
                   onClick={() => onSelectBus(bus.routeNumber)}
-                  className={`bg-white rounded-2xl py-2 px-3 flex items-center justify-between hover:bg-slate-50 active:scale-99 transition-all cursor-pointer ${borderGlow}`}
+                  className={`bg-white rounded-2xl py-2 px-3 flex items-center justify-between hover:bg-slate-50 active:scale-99 transition-all cursor-pointer relative overflow-hidden ${
+                    weatherMode === "extreme" ? "bg-red-50/20 border-red-200" : ""
+                  } ${borderGlow}`}
                 >
                   {/* Left Controls & Bus Badge */}
                   <div className="flex items-center gap-1.5 min-w-[125px]">
@@ -240,9 +305,20 @@ export default function MainMapView({
 
                   {/* Right: remaining time in standard blue as requested */}
                   <div className="text-right min-w-[65px]">
-                    <span className="text-xs font-extrabold text-[#0066CC] animate-pulse-subtle">
-                      {typeof bus.minutesLeft === "number" ? `${bus.minutesLeft}분 전` : bus.minutesLeft}
-                    </span>
+                    {typeof bus.minutesLeft === "number" ? (
+                      <div className="flex flex-col items-end">
+                        <span className={`text-xs font-black animate-pulse-subtle ${weatherMode === "extreme" ? "text-red-600" : "text-[#0066CC]"}`}>
+                          {weatherMode === "extreme" ? `${bus.minutesLeft + 5}분 전` : `${bus.minutesLeft}분 전`}
+                        </span>
+                        {weatherMode === "extreme" && (
+                          <span className="text-[8px] font-black text-red-500 tracking-tight leading-none mt-0.5 animate-pulse">지연보정 +5분</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className={`text-xs font-extrabold ${weatherMode === "extreme" ? "text-red-500" : "text-[#0066CC]"} animate-pulse-subtle`}>
+                        {bus.minutesLeft}
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -366,19 +442,28 @@ export default function MainMapView({
 
                       {/* Right minutes left block */}
                       <div className="text-right min-w-[70px]">
-                        <span
-                          className={`text-xs font-bold ${
-                            typeof bus.minutesLeft === "number"
-                              ? "text-blue-500"
-                              : bus.minutesLeft === "곧 도착"
-                              ? "text-red-500 animate-pulse-subtle font-extrabold"
-                              : bus.minutesLeft === "운행정보 없음"
-                              ? "text-gray-400 font-normal"
-                              : "text-purple-600"
-                          }`}
-                        >
-                          {typeof bus.minutesLeft === "number" ? `${bus.minutesLeft}분` : bus.minutesLeft}
-                        </span>
+                        {typeof bus.minutesLeft === "number" ? (
+                          <div className="flex flex-col items-end">
+                            <span className={`text-xs font-black ${weatherMode === "extreme" ? "text-red-600 font-extrabold" : "text-blue-500"}`}>
+                              {weatherMode === "extreme" ? `${bus.minutesLeft + 5}분` : `${bus.minutesLeft}분`}
+                            </span>
+                            {weatherMode === "extreme" && (
+                              <span className="text-[7.5px] font-black leading-none text-red-500 mt-0.5 animate-pulse">지연+5m</span>
+                            )}
+                          </div>
+                        ) : (
+                          <span
+                            className={`text-xs font-extrabold ${
+                              bus.minutesLeft === "곧 도착"
+                                ? "text-red-500 animate-pulse-subtle"
+                                : bus.minutesLeft === "운행정보 없음"
+                                ? "text-gray-400 font-normal"
+                                : "text-purple-600"
+                            }`}
+                          >
+                            {bus.minutesLeft === "곧 도착" && weatherMode === "extreme" ? "곧도착(정체)" : bus.minutesLeft}
+                          </span>
+                        )}
                       </div>
                     </div>
                   );

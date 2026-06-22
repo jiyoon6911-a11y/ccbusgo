@@ -177,17 +177,15 @@ export default function FakeMap({ onSelectStation, selectedStation, favorites = 
           return (
             <div
               key={`starred-bus-${busNum}`}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 z-30 transition-all hover:scale-105 select-none"
+              className="absolute transform -translate-x-1/2 -translate-y-1/2 z-30 transition-all select-none pointer-events-none"
               style={{ left: pos.x, top: pos.y }}
             >
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-yellow-400 rounded-full shadow-lg font-sans text-[10px] font-extrabold text-slate-800 animate-pulse-subtle">
-                <span className="text-yellow-400 text-xs">★</span>
-                <span className={`text-white text-[9px] font-black px-1.5 py-0.5 rounded-md ${pos.colorHex}`}>
-                  {busNum}
-                </span>
-                <span className="text-gray-500 font-bold">운행중</span>
+              {/* Downgraded to a simple informational plain text label to avoid mistouch/affordance errors */}
+              <div className="flex items-center gap-1 font-sans text-[10px] font-bold text-slate-700">
+                <span className="text-amber-500">★</span>
+                <span className="text-slate-800 font-extrabold">{busNum}</span>
+                <span className="text-slate-500 text-[9px] font-normal">(운행중)</span>
               </div>
-              <div className="w-2.5 h-2.5 bg-yellow-400 rotate-45 border-r border-b border-yellow-400 -mt-1 mx-auto shadow-xs" />
             </div>
           );
         })}

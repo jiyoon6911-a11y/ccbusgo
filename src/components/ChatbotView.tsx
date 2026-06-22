@@ -181,6 +181,42 @@ export default function ChatbotView({ onClose }: ChatbotViewProps) {
       {/* 2. Chatbot Footer Input Panel (screenshot 16) */}
       <div className="bg-white border-t border-gray-200/80 p-3 shrink-0">
         
+        {/* 💡 Suggested Prompt chips (수정사항 3. 콜드 스타트 방지 UI) */}
+        <div className="flex flex-col gap-1.5 mb-2.5 pb-2.5 border-b border-gray-100 select-none">
+          <span className="text-[10.5px] font-extrabold text-[#0066cc] flex items-center gap-1">
+            <span>💡 챗봇 추천 질문 (기상·배차 신속 자동 응답)</span>
+          </span>
+          <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            <button
+              onClick={() => {
+                setBusRoute("300");
+                handleSendMessage("비 오는데 300번 버스 연착 심해?");
+              }}
+              className="bg-sky-50/75 hover:bg-sky-100 text-[#005fb8] border border-sky-100/80 rounded-full px-3 py-1.5 text-[10.5px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 block"
+            >
+              "비 오는데 300번 버스 연착 심해?"
+            </button>
+            <button
+              onClick={() => {
+                setBusRoute("한림대셔틀");
+                handleSendMessage("오늘 한림대 기숙사 셔틀 첫차 언제야?");
+              }}
+              className="bg-sky-50/75 hover:bg-sky-100 text-[#005fb8] border border-sky-100/80 rounded-full px-3 py-1.5 text-[10.5px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 block"
+            >
+              "오늘 한림대 기숙사 셔틀 첫차 언제야?"
+            </button>
+            <button
+              onClick={() => {
+                setBusRoute("");
+                handleSendMessage("육림고개 가는 가장 빠른 버스 찾아줘");
+              }}
+              className="bg-sky-50/75 hover:bg-sky-100 text-[#005fb8] border border-sky-100/80 rounded-full px-3 py-1.5 text-[10.5px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 block"
+            >
+              "육림고개 가는 가장 빠른 버스 찾아줘"
+            </button>
+          </div>
+        </div>
+
         {/* Upper mini input columns matching image 16 */}
         <div className="grid grid-cols-2 gap-2 mb-2">
           <input
